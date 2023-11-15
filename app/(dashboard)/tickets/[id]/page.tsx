@@ -2,10 +2,27 @@ import { Loading } from "@/app/components/common";
 import { Ticket } from "@/app/types";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { Metadata, ResolvingMetadata } from "next";
 
 type TicketId = {
 	id: string;
 };
+
+type MetadataProps = {
+	params: { id: string };
+};
+
+export async function generateMetadata({
+	params,
+}: MetadataProps): Promise<Metadata> {
+	const res = await fetch(`http://localhost:4000/tickets/${params.id}`);
+	const ticket = await res.json();
+
+	return {
+		title: ticket.title,
+	};
+}
+
 export async function generateStaticParams(): Promise<TicketId[]> {
 	const res = await fetch("http://localhost:4000/tickets");
 	const tickets = await res.json();
