@@ -1,10 +1,20 @@
 import Link from "next/link";
+import React from "react";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 type Props = {
 	children: React.ReactNode;
 };
 
-export default function AuthLayout({ children }: Props) {
+const AuthLayout = async ({ children }: Props) => {
+	const supabase = createServerComponentClient({ cookies });
+	const { data } = await supabase.auth.getSession();
+
+	if (data.session) {
+		redirect("/");
+	}
 	return (
 		<>
 			<nav>
@@ -15,4 +25,6 @@ export default function AuthLayout({ children }: Props) {
 			{children}
 		</>
 	);
-}
+};
+
+export default AuthLayout;
